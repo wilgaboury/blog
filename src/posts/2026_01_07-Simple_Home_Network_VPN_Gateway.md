@@ -11,3 +11,5 @@ But that sucks. I don't want to have to waste an entire RaspberryPi and LAN port
 ## Goal
 
 This blog post is going to explain how to setup a home network Wiregaurd VPN gateway, and hopefully teach some cool Linux networking concepts along the way. This setup is meant to be as simple as possible, and just requires that you have a Linux computer with a wired ethernet connection to your router: the specification that it is wired is important.
+
+TODO
