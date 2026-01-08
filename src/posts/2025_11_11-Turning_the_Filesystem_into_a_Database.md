@@ -1,3 +1,5 @@
+[Home](../index.md)
+
 # Turning the Filesystem into a Database
 
 This article is an introduction to and explanation of SubsidiaDB. Usage and precise implementation details will not be covered; instead, we will gradually explore the systems and intuitions behind how it works. It's important to know where we are headed, so to reiterate the tagline: SubsidiaDB is a transactional, concurrent, embedded database that utilizes the filesystem as its storage engine.
