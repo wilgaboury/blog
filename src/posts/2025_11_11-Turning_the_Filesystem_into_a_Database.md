@@ -2,6 +2,8 @@
 
 This article is an introduction to and explanation of SubsidiaDB. Usage and precise implementation details will not be covered; instead, we will gradually explore the systems and intuitions behind how it works. It's important to know where we are headed, so to reiterate the tagline: SubsidiaDB is a transactional, concurrent, embedded database that utilizes the filesystem as its storage engine.
 
+Disclaimer: This project was more of a fun thought experiment and programming project than somthing anyone should actually try to use in production.
+
 ## File Locking
 
 Let's start by considering how we can safely read and write a single file from multiple processes. All of the major desktop operating systems (Windows, MacOS, and Linux) have file locking APIs supporting multi-reader/single-writer. In pseudocode we will use the hypothetical functions `lock_shared/unlock_shared` and `lock_exclusive/unlock_exclusive`. It may seem sufficient to simply use these functions, but the problem is that none of these operating systems guarantee that mixed reading and writing is fair. If, for instance, a file is constantly being read, the shared lock will always be taken and patiently waiting writers will block indefinitely. In a database, the possibility of writers never making forward progress is not acceptable.
