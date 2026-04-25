@@ -2,7 +2,7 @@
 
 # Better FPS Counter
 
-I recently read [an article](https://vplesko.com/posts/how_to_implement_an_fps_counter.html) about implementing FPS counters which covers a number of different methods, the benefits and drawbacks; though, it focuses exlusively on simple moving averages (SMA). I'm not much of a game developer, but I've dabbled enought that I've encountered this problem and instead gravitated toward using [exponential moving average (EMA)](https://en.wikipedia.org/wiki/Exponential_smoothing), which I haven't seen discussed much online.
+I recently read [an article](https://vplesko.com/posts/how_to_implement_an_fps_counter.html) about implementing FPS counters which covers a number of different methods, the benefits and drawbacks; though, it focuses exlusively on simple moving averages (SMA). I'm not much of a game developer, but I've done enough graphics programming that I've encountered this a number of times and instead gravitate toward using [exponential moving average (EMA)](https://en.wikipedia.org/wiki/Exponential_smoothing), which I haven't seen discussed much online.
 
 I'm not going to attempt to explain EMA or SMA or the tradeoffs from a mathematical/signal processing perspective. I don't have much experience in that field, and I'm more interested in it's computer science application. The plain and simple reason for preferring EMA is that it's calculation has constant time and space complexity regardless of window size, while also being easier to implement, in my opinion. The standard formula for EMA is:
 
@@ -21,7 +21,7 @@ $$
 \alpha=\frac{2}{n+1}
 $$
 
-This can already be used as is for a dirty and simple FPS counter where your goal is to sample the average over last n frames. As discussed in the original post, the problems with using fixed sample averages is that it dosen't properly depend on time. Espesially when graphing FPS, a slower framerate will look be quite smooth, while a high framerate will be jittery.
+This can already be used as is for a dirty and simple FPS counter where your goal is to sample the average over last n frames. As discussed in the original post, the problems with using fixed sample averages is that it dosen't properly depend on time. Espesially when graphing FPS, a slower framerate will look quite smooth, while a high framerate will be jittery.
 
 ## Time-based Smoothing Factor
 
@@ -45,9 +45,9 @@ So if we want to approximate the smoothing of a duration based SMA like the meth
 ```C
 static Uint64 prev_frame_start;
 
-float moving_average_of_frame_duration(
+float moving_average_of_frame_duration_sec(
     float prev_avg_dur,
-    float sample_dur
+    float sample_dur_sec
 ) {
     Uint64 cur_frame_start = SDL_GetPerformanceCounter();
     float frame_dur_unitless = (float)(cur_frame_start-prev_frame_start);
