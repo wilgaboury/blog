@@ -43,13 +43,15 @@ So if we want to approximate the smoothing of a duration based SMA like the meth
 ## FPS Calculation Routine Using SDL
 
 ```C
+static Uint64 prev_frame_start;
+
 float moving_average_of_frame_duration(
-    Uint64 prev_frame_start,
     float prev_avg_dur,
     float sample_dur
 ) {
     Uint64 cur_frame_start = SDL_GetPerformanceCounter();
     float frame_dur_unitless = (float)(cur_frame_start-prev_frame_start);
+    prev_frame_start = cur_frame_start;
     float frame_dur = frame_dur_unitless/(float)SDL_GetPerformanceFrequence();
     float t = sample_dur/2.0f;
     return (frame_dur*frame_dur + prev_avg_dur*t)/(t+frame_dur);
