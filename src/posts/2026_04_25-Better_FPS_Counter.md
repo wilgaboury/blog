@@ -15,7 +15,7 @@ $$\bar{d_i} = \alpha d_i + (1-\alpha)\bar{d}_{i-1}$$
 
 ## Simple Smoothing Factor
 
-The most important thing we need to figure out is what value do we use for $\alpha$. When using EMA on stocks it is common to see visualizations of n-day EMA. They way they figure $\alpha$ for this caluclation is using the concept of average age of datapoints. For an SMA with fixed sample window, the average age of datapoints is simply $n/2$. For an EMA, the average age is $\frac{1-\alpha}{\alpha}$. By setting these two equal, we derive a forumla for $\alpha$, whereby the EMA smoothing approximates the smoothing of an n-sample SMA:
+The most important thing we need to figure out is what value do we use for $\alpha$. When using EMA on stocks it is common to see visualizations of n-day EMA. The way they figure $\alpha$ for this caluclation is using the concept of average age of datapoints. For an SMA with fixed sample window, the average age of datapoints is simply $n/2$. For an EMA, the average age is $\frac{1-\alpha}{\alpha}$. By setting these two equal, we derive a forumla for $\alpha$, whereby the EMA smoothing approximates the smoothing of an n-sample SMA:
 
 $$
 \alpha=\frac{2}{n+1}
