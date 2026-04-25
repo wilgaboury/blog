@@ -1,5 +1,7 @@
 [Home](../index.md)
 
+<!-- TODO: unfinished blog -->
+
 # Simple Home Network VPN Gateway
 
 ## Motivation
