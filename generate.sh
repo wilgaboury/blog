@@ -34,3 +34,5 @@ for FILE in "${FILES[@]}"; do
             ;;
     esac
 done
+
+# ./gen_rss.sh > ${PUB}/rss.xml
