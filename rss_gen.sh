@@ -48,7 +48,7 @@ cat <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
-    <title>$(xml_escape "$FEED_TITLE")</title>
+    <title>$FEED_TITLE</title>
     <link>$(xml_escape "$FEED_LINK")</link>
     <description>$(xml_escape "$FEED_DESCRIPTION")</description>
     <language>$(xml_escape "$FEED_LANGUAGE")</language>
