@@ -40,7 +40,7 @@ $$\bar{d}_i = \frac{d_i^2 + \bar{d}_{i-1}T}{T+d_i}$$
 
 So if we want to approximate the smoothing of a duration based SMA like the method arrived at in the original blog, we set $T$ to the SMA window duration divided by two because the average age of time windowed SMA data is simply half the window duration.
 
-## Real World Examples
+## Real World Analysis
 
 I took a random capture of 5 seconds of ARC Raider gameplace with CapFrameX then implemented assorted smoothing techniques to demonstrate the resulting FPS values.
 
@@ -54,7 +54,7 @@ I took a random capture of 5 seconds of ARC Raider gameplace with CapFrameX then
 
 ## FPS Calculation Routine Using SDL
 
-Provided some example C code for using this technique with the popular [SDL library](https://www.libsdl.org/).
+Provided is some example C code for using this technique with the popular [SDL library](https://www.libsdl.org/).
 
 ```C
 static Uint64 prev_frame_start;
