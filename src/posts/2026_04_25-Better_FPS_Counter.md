@@ -21,7 +21,7 @@ $$
 \alpha=\frac{2}{n+1}
 $$
 
-This can be used as is for a dirty and simple FPS counter if you just want the average over last n frames. More generally, this can be useful in cases, like backend or embedded development, whenever you need a low overhead moving average for metics emitted by fixed freqency events. However, as discussed in the original post, the problem with using fixed sample averages for FPS is that it dosen't properly depend on time. Espesially when graphing the values over time, a slower framerate will look quite smooth, while a high framerate will be jittery.
+This can be used as is for a dirty and simple FPS counter if you just want the average over last n frames. More generally, this can be useful in other cases, like backend or embedded development, for whenever you need a low overhead moving average for metics emitted by fixed freqency events. However, as discussed in the original post, the problem with using fixed sample averages for FPS is that it dosen't properly depend on time. Espesially when graphing the values over time, a slower framerate will look quite smooth, while a high framerate will be jittery.
 
 ## Time-based Smoothing Factor
 
