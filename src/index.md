@@ -2,8 +2,6 @@
 title: "Wil's Blog"
 ---
 
-# Wil's Blog
-
 ## Posts
 
 * 2026

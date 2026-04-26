@@ -22,7 +22,12 @@ for FILE in "${FILES[@]}"; do
 
     case $REL in
         *.md)
-            sed 's/\.md)/.html)/g' $FILE | pandoc --mathjax=$MATHJAX -o ${DEST%.md}.html --standalone
+            OUT="${DEST%.md}.html"
+            if [[ $(basename "$OUT") == "index.html" ]]; then
+                sed 's/\.md)/.html)/g' "$FILE" | pandoc --mathjax="$MATHJAX" -o "$OUT" --standalone
+            else
+                sed 's/\.md)/.html)/g' "$FILE" | pandoc --mathjax="$MATHJAX" -o "$OUT" --standalone -B <(echo '<a href="../index.html">Home</a>')
+            fi
             ;;
         *)
             cp $FILE $DEST

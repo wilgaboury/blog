@@ -2,10 +2,6 @@
 title: "Better FPS Counter"
 ---
 
-[Home](../index.md)
-
-# Better FPS Counter
-
 I recently read [an article](https://vplesko.com/posts/how_to_implement_an_fps_counter.html) about implementing FPS counters which covers a number of different methods, the benefits and drawbacks; though, it focuses exclusively on simple moving averages (SMA). I'm not a game developer, but I've done enough graphical programming that I've encountered this problem a number of times and instead gravitate toward using [exponential moving average (EMA)](https://en.wikipedia.org/wiki/Exponential_smoothing), which I haven't seen discussed much for this use case.
 
 I'm not going to explain EMA or SMA or analyze the tradeoffs from a signal processing perspective. I don't have much experience in that field, and I'm more interested in its computer science application. The plain and simple reason for preferring EMA is that its calculation has constant time and space complexity regardless of window size, while also being easier to implement, in my opinion. The standard formula for EMA is:
