@@ -1,3 +1,7 @@
+---
+title: "Better FPS Counter"
+---
+
 [Home](../index.md)
 
 # Better FPS Counter

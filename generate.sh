@@ -22,7 +22,7 @@ for FILE in "${FILES[@]}"; do
 
     case $REL in
         *.md)
-            sed 's/\.md)/.html)/g' $FILE | pandoc -s --mathjax=$MATHJAX -o ${DEST%.md}.html
+            sed 's/\.md)/.html)/g' $FILE | pandoc --mathjax=$MATHJAX -o ${DEST%.md}.html --standalone
             ;;
         *)
             cp $FILE $DEST
