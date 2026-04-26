@@ -44,7 +44,13 @@ So if we want to approximate the smoothing of a duration based SMA like the meth
 
 I took a random capture of 5 seconds of ARC Raider gameplace with CapFrameX then implemented assorted smoothing techniques to demonstrate the resulting FPS values.
 
+<a href="../resources/time_fps_graph.png" target="_blank">
+  <img src="../resources/time_fps_graph.png">
+</a>
 
+<a href="../resources/sample_fps_graph.png" target="_blank">
+  <img src="../resources/sample_fps_graph.png">
+</a>
 
 ## FPS Calculation Routine Using SDL
 
