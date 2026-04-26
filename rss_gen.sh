@@ -78,7 +78,7 @@ for file in "$SOURCE_DIR"/*; do
         <guid>$(xml_escape "$item_link")</guid>
         <pubDate>$pub_date</pubDate>
         <description>$description</description>
-        <content:encoded><![CDATA[$(xml_escape "$content")]]></content:encoded>
+        <content:encoded><![CDATA[$content]]></content:encoded>
     </item>
 EOF
 done
