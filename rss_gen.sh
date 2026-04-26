@@ -40,36 +40,35 @@ extract_title() {
     echo "$title_part"
 }
 
+extract_description() {
+    echo $(sed -n '3s/^description: *"\([^"]*\)"/\1/p' "$1")
+}
+
 cat <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
     <title>$(xml_escape "$FEED_TITLE")</title>
     <link>$(xml_escape "$FEED_LINK")</link>
     <description>$(xml_escape "$FEED_DESCRIPTION")</description>
     <language>$(xml_escape "$FEED_LANGUAGE")</language>
     <lastBuildDate>$(xml_escape "$FEED_LAST_BUILD_DATE")</lastBuildDate>
-    <atom:link href="$(xml_escape "$FEED_LINK")rss.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="$(xml_escape "$FEED_LINK")/rss.xml" rel="self" type="application/rss+xml" />
 EOF
 
-for file in "${files[@]}"; do
-    full_path="$SOURCE_DIR/$file"
-
-    date_part="${file%%-*}"
+for file in "$SOURCE_DIR"/*; do
+    filename=$(basename "$file")
+    date_part="${filename%%-*}"
     pub_date=$(to_rfc822 "$date_part")
     if [[ -z "$pub_date" ]]; then
-        echo "Warning: Invalid date '$date_part' in file $file, skipping." >&2
-        continue
+        echo "ERROR: Invalid date part '$ymd' in file (expected YYYY_MM_DD)" >&2
+        exit 1
     fi
 
     title=$(extract_title "$file")
-    # Build item link: e.g., FEED_LINK + file without .md => ./YYYY_MM_DD-title
-    item_link="${FEED_LINK}${file%.md}"
-
-    # Read file content, escape XML special characters
-    # (Read entire file; you may want to limit description length)
-    content=$(cat "$full_path")
-    escaped_content=$(xml_escape "$content")
+    item_link="${FEED_LINK}/posts/${filename%.md}.html"
+    description=$(extract_description "$file")
+    content=$(cat "./public/posts/${filename%.md}.html")
 
     # Output RSS item
     cat <<EOF
@@ -78,7 +77,8 @@ for file in "${files[@]}"; do
         <link>$(xml_escape "$item_link")</link>
         <guid>$(xml_escape "$item_link")</guid>
         <pubDate>$pub_date</pubDate>
-        <description><![CDATA[${content}]]></description>
+        <description>$description</description>
+        <content:encoded><![CDATA[$(xml_escape "$content")]]></content:encoded>
     </item>
 EOF
 done

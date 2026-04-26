@@ -1,5 +1,6 @@
 ---
 title: "Exponentially Smoothed FPS Counters"
+description: "Exploring how to apply an interesting numerical technique with constant time and space complexity to FPS counters."
 ---
 
 I recently read [this article](https://vplesko.com/posts/how_to_implement_an_fps_counter.html) about implementing FPS counters which looks at a few different methods, covering the benefits and drawbacks; while interesting, it focuses exclusively on the use of simple moving averages (SMA). I'm not a game developer, but I've done enough graphical programming that I've encountered this problem a number of times and instead tend to opt for [exponential moving average (EMA)](https://en.wikipedia.org/wiki/Exponential_smoothing), which I haven't seen discussed much online for this use case.
