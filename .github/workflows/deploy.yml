@@ -22,6 +22,14 @@ jobs:
         run: |
           ./generate.sh
 
+      - name: Create Cloudflare Pages project (if missing)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project create blog --production-branch master
+        continue-on-error: true
+
       - name: Deploy to Cloudflare Pages with Wrangler
         uses: cloudflare/wrangler-action@v3
         with:
