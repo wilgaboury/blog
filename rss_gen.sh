@@ -4,8 +4,8 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 FEED_TITLE="Wil's Blog"
-FEED_LINK="https://blog.wilsworld.com"
-FEED_DESCRIPTION="Some software engineer's blog"
+FEED_LINK="https://blog.wilsworld.net"
+FEED_DESCRIPTION="a blog mostly about software engineering"
 FEED_LANGUAGE="en-us"
 FEED_LAST_BUILD_DATE=$(date -R)
 SOURCE_DIR=./src/posts
