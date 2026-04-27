@@ -47,7 +47,7 @@ I took a random capture of 5 seconds of ARC Raiders gameplay with [CapFrameX](ht
 
 ![](../resources/fix_sma_ema.png)
 
-We see that the dynamic moving averages (both SMA and EMA) are more asymmetrically responsive to low FPS compared to fixed sample averages. This makes sense because a long frame duration will be weighted higher than a short frame duration. For debugging purposes, this may be a desirable property because it means the counters do a better job at representing periods of low performance. It is also clear from these graphs that there is a persistent gap between dynamic SMA and EMA. The specific datasets used above show much more of a difference than other captures I took where framerate was more stable; however, whether dynamic SMA is overestimating or dynamic EMA is underestimating may simply be in the eyes of the beholder.
+We see that the dynamic moving averages (both SMA and EMA) are more asymmetrically responsive to low FPS compared to fixed sample averages. This makes sense because a long frame duration will be weighted higher than a short frame duration. For debugging purposes, this may be a desirable property because it means the counters do a better job at representing periods of low performance. It is also clear from these graphs that there is a persistent gap between dynamic SMA and EMA. The specific datasets used above show much more of a difference than other captures I took where framerate was more stable; however, whether dynamic SMA is overestimating or dynamic EMA is underestimating may ultimately be in the eyes of the beholder.
 
 [notebook source](https://github.com/wilgaboury/blog/blob/master/other/fps-analysis/frame_analysis.ipynb)
 
