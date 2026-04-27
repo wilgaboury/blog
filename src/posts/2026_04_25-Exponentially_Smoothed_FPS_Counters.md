@@ -41,13 +41,19 @@ So if we want to approximate the smoothing of a duration based SMA like the meth
 
 ## Real World Analysis
 
-I took a random capture of 5 seconds of ARC Raiders gameplay with [CapFrameX](https://www.capframex.com) then implemented assorted smoothing techniques to demonstrate the resulting FPS values. There are some interesting observations that can be taken from these visualizations.
+I took a random capture of 5 seconds of ARC Raiders gameplay with [CapFrameX](https://www.capframex.com) then implemented assorted smoothing techniques to demonstrate the resulting FPS values.
 
 ![](../resources/dyn_sma_ema.png)
 
+In this first graph we compare dynamic SMA (the time-based dynamic queue FPS counter provided by the original post) to our dynamic EMA implementation. What is immediately noticeable is that our EMA persistently outputs lower FPS values than the comparable SMA. The reason for this comes down to weighting. SMA always weights each frame duration over the window period equally; for instance, if you have one very long frame that takes 0.99 seconds proceeded by a short frame that takes 0.01 seconds, SMA will tell you that the average frame duration over the previous second was 0.5. To properly compare the two we simply use a weighted average, where each frame duration is weighted by its portion of the window duration.
+
+![](../resources/dyn_wei_sma_ema.png)
+
+This graph provides the most important result that we want to verify analytically, which is that our dynamic EMA FPS counter correctly approximates a comparable dynamic SMA.
+
 ![](../resources/fix_sma_ema.png)
 
-We see that the dynamic moving averages (both SMA and EMA) are more asymmetrically responsive to low FPS compared to fixed sample averages. This makes sense because a long frame duration will be weighted higher than a short frame duration. For debugging purposes, this may be a desirable property because it means the counters do a better job at representing periods of low performance. It is also clear from these graphs that there is a persistent gap between dynamic SMA and EMA. The specific datasets used above show much more of a difference than other captures I took where framerate was more stable; however, whether dynamic SMA is overestimating or dynamic EMA is underestimating may ultimately be in the eyes of the beholder.
+Finally, this graph demonstrates that our initial fixed EMA also does a good job at approximating a fixed SMA.
 
 [notebook source](https://github.com/wilgaboury/blog/blob/master/other/fps-analysis/frame_analysis.ipynb)
 
