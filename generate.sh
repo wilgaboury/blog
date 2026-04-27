@@ -24,9 +24,18 @@ for FILE in "${FILES[@]}"; do
         *.md)
             OUT="${DEST%.md}.html"
             if [[ $(basename "$OUT") == "index.html" ]]; then
-                sed 's/\.md)/.html)/g' "$FILE" | pandoc --mathjax="$MATHJAX" -o "$OUT" --standalone
+                sed 's/\.md)/.html)/g' "$FILE" | pandoc \
+                    --mathjax="$MATHJAX" \
+                    -o "$OUT" \
+                    --standalone \
+                    --lua-filter=image-link-filter.lua
             else
-                sed 's/\.md)/.html)/g' "$FILE" | pandoc --mathjax="$MATHJAX" -o "$OUT" --standalone -B <(echo '<a href="../index.html">Home</a>')
+                sed 's/\.md)/.html)/g' "$FILE" | pandoc \
+                    --mathjax="$MATHJAX" \
+                    -o "$OUT" \
+                    --standalone \
+                    --lua-filter=image-link-filter.lua \
+                    -B <(echo '<a href="../index.html">Home</a>')
             fi
             ;;
         *)
