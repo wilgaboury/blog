@@ -45,11 +45,11 @@ I took a random capture of 5 seconds of ARC Raiders gameplay with [CapFrameX](ht
 
 ![](../resources/dyn_sma_ema.png)
 
-In this first graph we compare dynamic SMA (the time-based dynamic queue FPS counter provided by the original post) to our dynamic EMA implementation. What is immediately noticeable is that our EMA persistently outputs lower FPS values than the comparable SMA. The reason for this comes down to weighting. SMA always weights each frame duration over the window period equally; for instance, if you have one very long frame that takes 0.99 seconds proceeded by a short frame that takes 0.01 seconds, SMA will tell you that the average frame duration over the previous second was 0.5. To properly compare the two we simply use a weighted average, where each frame duration is weighted by its portion of the window duration.
+In this first graph we compare dynamic SMA (the time-based dynamic queue FPS counter provided by the original post) to our dynamic EMA implementation. What is immediately noticeable is that our EMA persistently outputs lower FPS values than SMA. The reason is that this SMA implementation weights each frame duration over the window period equally; for instance, if you have one very long frame that takes 0.99 seconds preceded by a short frame that takes 0.01 seconds, an unweighted average will tell you that the average frame duration over the previous second was 0.5. To properly compare the two we simply use a weighted average, where each frame duration is weighted by its portion of the window duration.
 
 ![](../resources/dyn_wei_sma_ema.png)
 
-This graph provides the most important result that we want to verify analytically, which is that our dynamic EMA FPS counter correctly approximates a comparable dynamic SMA.
+This graph provides the most important result that we want to verify, which is that our dynamic EMA FPS counter correctly approximates a comparable dynamic SMA.
 
 ![](../resources/fix_sma_ema.png)
 
