@@ -12,14 +12,9 @@ But that sucks. I don't want to have to waste an entire RaspberryPi and LAN port
 
 This blog post is going to explain how to setup a home network Wiregaurd VPN gateway, and hopefully teach some cool Linux networking concepts along the way. This setup is meant to be as simple as possible, and just requires that you have a Linux computer with a wired ethernet connection to your router: the specification that it is wired is important.
 
-## macvlan
+<!-- ## macvlan
 
 The secret for to allowing your Linux computer to have correctly functioning internet while also acting as a tunnel anchor is a kernel technology called macvlan. In short, this allow you to take a single phsical network interface, like a network card, and split it into multiple interfaces at the link layer. Each of these interfaces will have a separate MAC address and communicate with the router's DHCP server to get a distinct local IP.
 
-We are going to split the physical interface in three
-
-* mv0 - regular traffic
-* mv1 - VPN in
-* mv2 - VPN out
-
+We are going to split the physical interface in three -->
 TODO

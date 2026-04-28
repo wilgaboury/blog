@@ -68,7 +68,10 @@ for file in "$SOURCE_DIR"/*; do
     title=$(extract_title "$file")
     item_link="${FEED_LINK}/posts/${filename%.md}.html"
     description=$(extract_description "$file")
-    content=$(cat "./public/posts/${filename%.md}.html")
+
+    # Note: I don't think the content thing works well
+    # content=$(cat "./public/posts/${filename%.md}.html")
+            # <content:encoded><![CDATA[$content]]></content:encoded>
 
     # Output RSS item
     cat <<EOF
@@ -78,7 +81,6 @@ for file in "$SOURCE_DIR"/*; do
         <guid>$(xml_escape "$item_link")</guid>
         <pubDate>$pub_date</pubDate>
         <description>$description</description>
-        <content:encoded><![CDATA[$content]]></content:encoded>
     </item>
 EOF
 done
