@@ -70,7 +70,7 @@ void update_ema_frame_duration_sec(
     Uint64 frame_start = SDL_GetPerformanceCounter();
     float frame_dur_unitless = (float)(frame_start-*prev_frame_start);
     *prev_frame_start = frame_start;
-    float frame_dur = frame_dur_unitless/(float)SDL_GetPerformanceFrequence();
+    float frame_dur = frame_dur_unitless/(float)SDL_GetPerformanceFrequency();
     float t = window_dur/2.0f;
     *ema_dur = (frame_dur*frame_dur + *ema_dur*t)/(t+frame_dur);
 }
