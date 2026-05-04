@@ -3,26 +3,26 @@ title: "Turning the Filesystem into a Database"
 description: "Explaining a scheme for implementing useful multi-process ACID abstractions on top of a standard filesystem."
 ---
 
-This article is an introduction to and explanation of SubsidiaDB. Usage and precise implementation details will not be covered; instead, we will gradually explore the systems and intuitions behind how it works. It's important to know where we are headed, so to reiterate the tagline: SubsidiaDB is a transactional, concurrent, embedded database that utilizes the filesystem as its storage engine.
+This article is an introduction to and explanation of [SubsidiaDB](https://github.com/wilgaboury/sbdb). Usage and precise implementation details will not be covered; instead, we will gradually explore the systems and intuitions behind how it works. It's important to know where we are headed, so to reiterate the tagline: SubsidiaDB is a transactional, multiprocess, embedded database that utilizes the filesystem as its storage engine.
 
-Disclaimer: This project was more of a fun thought experiment and programming project than somthing anyone should actually try to use in production.
+Disclaimer: This idea is mostly a thought experiment and personal programming project that has not been thoroughly tested in real applications.
 
 ## File Locking
 
 Let's start by considering how we can safely read and write a single file from multiple processes. All of the major desktop operating systems (Windows, MacOS, and Linux) have file locking APIs supporting multi-reader/single-writer. In pseudocode we will use the hypothetical functions `lock_shared/unlock_shared` and `lock_exclusive/unlock_exclusive`. It may seem sufficient to simply use these functions, but the problem is that none of these operating systems guarantee that mixed reading and writing is fair. If, for instance, a file is constantly being read, the shared lock will always be taken and patiently waiting writers will block indefinitely. In a database, the possibility of writers never making forward progress is not acceptable.
 
-In order for add fairness between readers and writers, we will introduce an adjacent file called `_filename_.queue`. Before either a reader or writer attempts to lock the file, it will first take an exclusive lock on the queue file, then immediately release it once it acquires the file lock (see pseudo-code below). By forcing an initial exclusive synchronization point, incoming concurrent readers and writers will both have an equal chance of making forward progress. While this does come with a performance penalty, in a database, well behaved concurrency with steady throughput is generally preferable over lopsided read/write throughput and exploding tail latencies.
+In order for add fairness between readers and writers, we will introduce an adjacent hidden file called `._filename_.queue`. Before either a reader or writer attempts to lock the file, it will first take an exclusive lock on the queue file, then immediately release it once it acquires the file lock (see pseudo-code below). By forcing an initial exclusive synchronization point, incoming concurrent readers and writers will both have an equal chance of making forward progress. While this does come with a performance penalty, in most cases, well behaved concurrency with steady throughput is generally preferable over lopsided read/write throughput and exploding tail latencies.
 
 ```rust
 fn lock_read(file) {
-    queue = file + ".queue"
+    queue = "." + file + ".queue"
     lock_exclusive(queue)
     lock_shared(file)
     unlock_exclusive(queue)
 }
 
 fn lock_write(file) {
-    queue = file + ".queue"
+    queue = "." + file + ".queue"
     lock_exclusive(queue)
     lock_exclusive(file)
     unlock_exclusive(queue)
@@ -31,7 +31,7 @@ fn lock_write(file) {
 
 ## Directories
 
-In treating the filesystem as a database, we additionally need to consider reading and writing directories (by that I mean CRUD operations on a directory's children). Since directories can't be locked, we will simply have an adjacent file next to each directory called `_dirname_.lock`. Read and write locks on a single directory will then work exactly the same way as files.
+In treating the filesystem as a database, we additionally need to consider reading and writing directories (by that I mean CRUD operations on a directory's children). Since directories can't be locked, we will simply have an adjacent hidden file next to each directory called `._dirname_.lock`. Read and write locks on a single directory will then work exactly the same way as files.
 
 It's important to also note at this point that unlike most database systems, which are relatively flat, filesystems are hierarchical. When taking a read or write lock on a file or directory, concurrent modifications to the parent directory may cause problems. To remedy this, our lock procedure (read and write) will first take a shared lock on each parent directory starting from the root and going down to the target.
 
@@ -47,7 +47,7 @@ fn prepare_for_lock(root, target) {
 
 Even if an application does have an exclusive write lock on a file, modifying that file is inherently risky because filesystems generally only protect their metadata and make little attempt at preventing file content corruption. A sudden shutdown or failure during ongoing file writing will leave it in an incomplete state. We can minimize this problem, by instead mutating a copy of the file, then performing an atomic rename that overwrites the original file with the new version; for those unfamiliar, this pattern is commonly referred to as copy-on-write (CoW).
 
-There is an unfortunate caveat for entire directories. While the atomic rename operation can be used to replace a non-empty file, it cannot be used for replacing non-empty directories. Instead, we must use two sequential rename operations: first, rename the original directory with a backup name; second, rename the new directory to replace the original. While this is not strictly atomic, it significatly minimizes the possiblity of a partial commit compared to performing a series of mutations directly.
+There is an unfortunate caveat for entire directories. While the atomic rename operation can be used to replace a non-empty file, it cannot be used for replacing non-empty directories. Instead, we must use two sequential rename operations: first, rename the original directory with a backup name; second, rename the new directory to replace the original. While this is not strictly atomic, it significantly minimizes the possibility of a partial commit compared to performing a series of mutations directly.
 
 I'd also like to note here that making copies of files and directories will typically add considerable overhead, but some modern filesystems like Btrfs, XFS, APFS and others, actually have support for CoW operations. This means performing a copy is fast and does not duplicate data on disk; mutations are essentially stored as a diff of the original content.
 
@@ -63,13 +63,13 @@ Without getting too wrapped up in an analysis of different concurrency control s
 
 So far, I have mentioned two major shortcomings, non-atomic directory commit and lack of multi-entry rollback. SubsidiaDB does offer a solution to these problems, but it comes with drawbacks.
 
-As mentioned before, write commits are atomic for files, so by representing our directory with a symbolic link, which is just a file, we actually can perform atomic commit for an entire directory. Let's demonstrate how it works with a hypothetical directory called `target`. Targect is actually a symbolic link with the contents `./<uuid-1>`. First, we take a write lock on `target`, then copy the actual content directory `<uuid-1>` to `<uuid-2>` and perform mutations on the copy. To commit, we make a new symbolic link `target.tmp` and atomically rename it to `target`. Finally, we can safely delete `<uuid-1>` to cleanup. Symbolic links aren't an ideal solution in many cases though, as they have serious problems on Windows and can complicate programmatic traversal. For these reasons, it is left to the discretion of users to what extent they employ this feature.
+As mentioned before, write commits are atomic for files, so by representing our directory with a symbolic link, which is just a file, we actually can perform atomic commit for an entire directory. Let's demonstrate how it works with a hypothetical directory called `target`. Target is actually a symbolic link to an adjacent hidden directory `.<uuid-1>`. First, we take a write lock on `target`, then copy the actual content directory `.<uuid-1>` to a new directory `.<uuid-2>` and perform mutations on the copy. To commit, we make a new hidden symbolic link `.target` and atomically rename it to `target`. Finally, we can safely delete the original folder `.<uuid-1>` to cleanup. Symbolic links aren't a perfect solution though, since they are not always supported on Windows.
 
 For multi-entry rollback, this may have already been apparent to some readers, but it can be achieved by performing CoW + commit on the highest encompassing parent directory for all the data a transaction touches. This approach can be very heavy handed, and requires the foresight to structure data in accordance with transactions that will be performed.
 
 ## Conclusion
 
-This database came about from wrestling with a simple question: how could one create an embedded database that supports truly concurrent multi-process writes? From this starting point, it felt to me like the entire design fell into place as a natural logical progression. I see this system as filling a neglected niche, small applications that want resilient storage with ACID guarantees but don’t want the large leap in complexity of standard embedded databases (or full DBMSs for that matter). Working with files is one of the first proramming topics people learn about, so it’s a huge benefit that this database is simply providing additional safety to a persistence interface that everyone is already familiar with.
+This database scheme came about from wrestling with a simple question: how could one create an embedded database that supports truly concurrent, non-coordinating, multi-process writes? From this starting point, it felt to me like the entire design fell into place as a natural logical progression. I see this system as filling a neglected niche, small applications that want resilient storage with ACID guarantees but don’t want the large leap in complexity of standard embedded databases (or full DBMSs for that matter). Working with files is one of the very first topics every practitioner learns about, so it’s a huge benefit that this database is basically just providing additional safety measures to an already familiar persistence interface.
 
 ### Addendum on Hierarchical Databases
 
